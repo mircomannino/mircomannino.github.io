@@ -1,0 +1,57 @@
+
+body {
+    font-family: "Arial", monospace;
+}
+
+/* external link */
+a:link {
+    text-decoration: none;
+}
+/********************************************************************************/
+
+/* INDEX - Education */
+div.education-custom-card-header {
+    background: #AF7AC5; // Dark-purple
+}
+
+span.education-custom-card-header {
+    font-size: 20px;
+}
+
+span.education-custom-card-sub-header {
+    font-size: 17px;
+    color: white;
+}
+
+div.education-custom-card-body {
+    background: #EBDEF0; // Light-purple
+}
+/******************************************************************************/
+
+/* INDEX Work experiences */
+div.workexperiences-custom-card-header {
+    background: #5499C7; // Dark-blue
+}
+
+span.workexperiences-custom-card-header {
+    font-size: 20px;
+}
+
+span.workexperiences-custom-card-sub-header {
+    font-size: 15px;
+    color: white;
+}
+
+div.workexperiences-custom-card-body {
+    background: #D4E6F1; // Light-blue
+}
+/******************************************************************************/
+
+/* PUBBLICATIONS */
+span.pubblications-number {
+    font-size: 19px;
+}
+span.pubblications-author {}
+span.pubblications-title {}
+span.pubblications.conference {}
+/******************************************************************************/
