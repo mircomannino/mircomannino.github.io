@@ -51,3 +51,13 @@ span.pubblications-author {}
 span.pubblications-title {}
 span.pubblications.conference {}
 /******************************************************************************/
+
+/* ATTENDANCE */
+span.attendance-name {}
+span.attendance-date {
+    color: grey;
+}
+span.attendance-venue {
+    color: grey;
+}
+/******************************************************************************/
