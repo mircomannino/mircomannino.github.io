@@ -61,3 +61,17 @@ span.attendance-venue {
     color: grey;
 }
 /******************************************************************************/
+
+/* POSTS */
+span.posts-title {
+    font-size: 50px;
+    font-weight: bold;
+}
+span.posts-subtitle {
+    font-size: 35px;
+    font-weight: bold;
+}
+span.posts-auth-date-info {
+    color: grey;
+}
+/******************************************************************************/
