@@ -43,13 +43,24 @@ div.workexperiences-custom-card-body {
 }
 /******************************************************************************/
 
-/* PUBBLICATIONS */
+/* PUBLICATIONS */
 span.publications-number {
     font-size: 19px;
 }
 span.publications-author {}
 span.publications-title {}
 span.publications.conference {}
+a.pub-link:hover    { text-decoration: none; color: white; }
+a.pub-link:visited  { text-decoration: none; color: white; }
+a.pub-link:active   { text-decoration: none; color: white; }
+a.pub-link {
+    color: white;
+    background-color: rgb(206, 107, 206);
+    margin-right: 2%;
+    padding: 0.3%;
+    text-align: center;
+    border: 1px solid black;
+}
 /******************************************************************************/
 
 /* ATTENDANCE */
