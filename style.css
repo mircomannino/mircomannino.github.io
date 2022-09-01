@@ -89,7 +89,7 @@ span.posts-auth-date-info {
 
 /* PROJECTS */
 span.projects-title {
-    font-size: 25px;
+    font-size: 23px;
     font-weight: bold;
 }
 a.projects-link:hover    { text-decoration: none; color: black; }
