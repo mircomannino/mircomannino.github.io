@@ -86,3 +86,22 @@ span.posts-auth-date-info {
     color: grey;
 }
 /******************************************************************************/
+
+/* PROJECTS */
+span.projects-title {
+    font-size: 25px;
+    font-weight: bold;
+}
+a.projects-link:hover    { text-decoration: none; color: black; }
+a.projects-link:visited  { text-decoration: none; color: black; }
+a.projects-link:active   { text-decoration: none; color: black; }
+a.projects-link {
+    color: black;
+    background-color: rgb(255, 255, 255);
+    margin-top: 3%;
+    padding: 1%;
+    font-weight: bold;
+    /* border: 1px solid black; */
+    border-radius: 3%;
+}
+/******************************************************************************/
