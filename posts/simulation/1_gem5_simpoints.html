@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../style.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <title>Mirco Mannino </title>
+  </head>
+  <body>
+
+    <div class='container shadow-lg'>
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="../../index.html"> Home </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link inactive" href="../../projects/projects.html"> Projects </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="../../posts.html"> Posts </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../../publications/publications.html"> Publications </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../../attendance/attendance.html"> Attendance </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- END Navbar -->
+
+      <!-- Main content -->
+      <div class="container-fluid mt-2">
+
+        <!-- Menu -->
+        <div class="container fluid border border-dark p-2">
+          Posts > Simulation
+        </div>
+        <!-- END Menu -->
+
+        <!-- Title -->
+        <div class="container fluid">
+          <span class="posts-title"> Simpoints in Gem5 </span> <br/>
+        </div>
+        <!-- END Title -->
+
+        <!-- Author and Post info -->
+        <div class="container fluid  mt-2">
+          <span class="posts-auth-date-info"> Mirco Mannino, November 2023 </span>
+        </div>
+        <!-- END Author and Post info -->
+
+        <!-- Overview -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> Overview </span>
+          <p class="fs-7">
+            <a target="_blank" href="https://www.gem5.org/"> Gem5 </a> is a very 
+            powerful simulation tool for computer architects. 
+            However, if you need to run detailed simulations, it can take too.
+            A widely used approach to overcome this problem is the use of the 
+            so-called <a target="_blank" href="https://cseweb.ucsd.edu/~calder/simpoint/"> SimPoint</a>. <br>
+            In this article I'll show you how to generate represetative regions, using SimPoint tool, 
+            and run them with the Gem5 simulator (RISC-V ISA).
+          </p>
+
+          <p class="fs-7">
+            The SimPoint tool enables the extraction of representative regions 
+            within an application, characterized by an instruction number 
+            and a weight. By specifying the length in terms of the number of 
+            instructions, the tool provides N regions accordingly.
+            the following steps need to be undertaken:
+            <ul>
+              <li> Generate BBV file </li>
+              <li> Generate SimPoints </li>
+              <li> Generate checkpoints </li>
+              <li> Run all checkpoints </li>
+              <li> Aggregate results </li>
+            </ul>
+            After the SimPoints are identified, we can take checkpoints at 
+            those instructions and run the simulation only for those regions,
+            instead of running the entire benchmark.
+          </p>
+        </div>
+        <!-- END Overview -->
+
+        <!-- Generate BBV file -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> Generate BBV file </span>
+
+          <p class="fs-7">
+            The first step to obtain SimPoint regions is the generation of the
+            Basic Block Vector (BBV) file.
+            BBV file contains useful information for the SimPoint analysis.
+            Gem5 allows to generate BBV file, but I found this method quite slow.
+            Another approach is to use <a target="_blank" href="https://www.qemu.org/">QEMU emulator</a>,
+            allowing to obtain the BBV file quickly.
+          </p>
+
+          <p class="fs-7">
+            In order to generate BBV file with QEMU, you need to use a plugin
+            called <b>qpoints</b>. I had some problems using the official version
+            of qpoints with the newest QEMU versions.
+            In my GitHub account, I published a version of qpoints that is 
+            compatible with QEMU v6.2: 
+            <a target="_blank" href="https://github.com/mircomannino/qpoints/tree/qemu-v6.2.0">
+              https://github.com/mircomannino/qpoints/tree/qemu-v6.2.0</a>.
+          </p>
+
+          <p class="fs-7">
+            To build the qpoints plugin, you can follow the instructions in the README
+            of the GitHub repository. To generate the BBV file for an application, 
+            run the following command:
+          </p>
+<pre>
+<code class="src-code">
+export OUT_DIR=./
+export OUT_NAME=hello
+export SIMPOINTS_INTERVAL=100000000 # 100M
+qemu-riscv64 \
+    -plugin ./libbv.so,out_dir=${OUT_DIR},out_name=${OUT_NAME},simpoint_interval=${SIMPOINTS_INTERVAL} \
+    ./hello \
+    arg-0 \
+    arg-1 \
+    arg-2
+</code>
+</pre>
+          <p class="fs-7">
+            This previous command generates a BBV file for SimPoints,
+            where each region is 100 million instructions long. 
+            The example is performed for an application named "hello" 
+            with input arguments "arg-0," "arg-1," and "arg-2".
+            The file we are interested in is <b>hello.bb.gz</b>.
+          </p>
+        </div>
+        <!-- END Generate BBV file -->
+        
+        <!-- Generate SimPoints -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> Generate SimPoints </span>
+
+          <p class="fs-7">
+            To generate SimPoints, you need to download and build the tool 
+            you can find at this <a target="_blank" href="https://cseweb.ucsd.edu/~calder/simpoint/software-release.htm"> link</a>.
+            Then, run the following command:
+          </p>
+<pre>
+<code class="src-code"> 
+&lt;path-to-simpoints-folder&gt;/bin/simpoint \
+  ./hello.bb.gz \
+  -saveSimpoints ./out.simpoint \
+  -saveSimpointWeights ./out.weight \
+  -loadFVFile \
+  -inputVectorsGzipped
+</code>
+</pre>
+          <p class="fs-7">
+            After running the previous command, we have two files: 
+            <b>out.simpoint</b> and <b>out.weight</b>. <br>
+            The first one contains the information about the position of representative regions 
+            (i.e., the number of the first instruction of each region), while
+            the second one indicates the weight associated to each region.
+          </p>
+        </div>
+        <!-- END Generate SimPoints -->
+
+        <!-- Generate Checkpoints -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> Generate checkpoints </span>
+
+          <p class="fs-7">
+            After obtaining the simpoints regions, it is possible to use 
+            Gem5 to take checkpoints on those regions.
+            Fortunately, Gem5 provides support for simpoints, so it will only 
+            be necessary to specify the location of the previously generated 
+            files and the number of warmup instructions we want to execute 
+            before entering the actual region
+          </p>
+
+          <p class="fs-7">
+            The <i>se.py</i> configuration script has some input arguments 
+            useful to deal with SimPoints.
+            Run the following command, in the gem5 folder, to take checkpoints: 
+          </p>
+<pre>
+<code class="src-code"> 
+export SIMPOINTS_INTERVAL=100000000 #100M
+export WARMUP_INTERVAL=50000000     #50M
+export OUT_DIR=./cpt_from_simpints
+build/RISCV/gem5.opt \
+  --outdir=$OUT_DIR \
+  configs/example/se.py \
+  --cmd="hello"  \
+  --options="arg-0 arg-1 arg-2" \
+  --take-simpoint-checkpoint=./out.simpoint,./out.weight,$SIMPOINTS_INTERVAL,$WARMUP_INTERVAL 
+</code>
+</pre>
+          <p class="fs-7">
+            After running the previous command, we have a folder for each checkpoints
+            in the <b>cpt_from_simpoints</b> folder. <br>
+            Fortunately, the information regarding the simpoint interval 
+            length and warmup length is conveniently embedded in the name of 
+            each checkpoint folder. This eliminates the need to contend with 
+            cumbersome instruction counts during the restoration of checkpoints.
+          </p>
+        </div>
+        <!-- END Generate Checkpoints -->
+
+        <!-- Run all Checkpoints -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> Run all checkpoints </span>
+
+          <p class="fs-7">
+            Now, we have to run the simulation for each checkpoint.
+            You can do that running the following command:
+          </p>
+<pre>
+<code class="src-code">
+export CPT_DIR=./cpt_from_simpoints
+export OUT_DIR=./output_cpt-1
+build/RISCV/gem5.opt \
+  --outdir=$OUT_DIR
+  configs/example/se.py \
+  --cmd="hello"  \
+  --options="arg-0 arg-1 arg-2"  \
+  --cpu-type=O3CPU \
+  --restore-simpoint-checkpoint \
+  -r 1 \
+  --checkpoint-dir=$CPT_DIR \
+  --restore-with-cpu=MinorCPU 
+</code>
+</pre>
+        <p class="fs-7">
+          The previous command restores the simulation to a point 50M instructions 
+          before the SimPoint region, runs with a MinorCPU, and then continues 
+          the simulation for an additional 100M instructions using an O3CPU
+        </p>
+        <p class="fs-7">
+          You have to run the previous command for all the checkpoints. 
+          If you have, for instance, 4 checkpoints, you need to run the previous 
+          command 4 times, changing the <b>-r</b> value (i.e., -r 1, -r 2, -r 3, and -r 4).
+        </p>
+        </div>
+        <!-- END Run all Checkpoints -->
+
+        <!-- Aggregate results -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> Aggregate results </span>
+
+          <p class="fs-7">
+            Almost done! Now, we need to use the weigth of each region in order
+            to obtain the value of the statistics we are interested in.
+          </p>
+          <p class="fs-7">
+            Assuming we want to compute the IPC of the benchmark. 
+            To calculate the IPC of the benchmark, we have to sum the 
+            products of each IPC and its corresponding weight. 
+            The final results has to be divided by the sum of all the weights.
+            The formula can be summarized as follows:
+          </p>
+<code class="src-code">
+ipc = (ipc_0*weight_0 + ipc_1*weight_1 + ... ipc_N*weigh_N) / (weigh_0 + weigh_1 + ... + weigh_N) 
+</code>
+</pre>
+        </div>
+        <!-- END Aggregate results -->
+      
+
+        <!-- Conclusions -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> Conclusions </span>
+
+          <p class="fs-7">
+            In this brief article we saw how to use SimPoints in Gem5 simulator. </br>
+            If you have any feedback or comments, please let me know by writing
+            to the following e-mail:
+            <a href="mailto:mannino@diism.unisi.it">mannino@diism.unisi.it</a>
+          </p>
+        </div>
+        <!-- END Conclusions -->
+
+        <!-- References -->
+        <div class="container fluid mt-4">
+          <span class="posts-subsection-title"> References </span>
+
+          <p class="fs-7">
+            <a target="_blank" href="https://cluelessram.blogspot.com/2017/10/using-simpoint-in-gem5-to-speed-up_11.html">
+              Using SimPoint in Gem5 to Speed up Simulation
+            </a> 
+            <br>
+            <a target="_blank" href="https://www.gem5.org/project/2022/12/30/gem5-22-1.html">
+              Gem5: SimPoints
+            </a> 
+          </p>
+        </div>
+        <!-- END References -->
+
+
+          </div>
+        </div>
+
+
+    <!-- JS: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+  </body>
+</html>
